@@ -1,6 +1,8 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
-const app = express();
+const bookRoutes = require('./routes/book');
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://GrimoireP6:DvTcwx64Q43T1lLU@openclassrooms.muaak.mongodb.net/?retryWrites=true&w=majority&appName=OpenClassRooms";
@@ -24,7 +26,7 @@ async function run() {
 
 run();
 
-app.use(express.json());
+const app = express();
 
 
 app.use((req, res, next) => {
@@ -34,74 +36,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post('/api/books', (req, res, next) => {
-  console.log(req.body);
-  res.status(201).json({
-    message: 'Objet créé !'
-  });
-  next();
-});
+app.use(bodyParser.json());
 
-
-app.get('/api/books', (req, res, next) => {
- const books = [
-  {
-  "id": "1",
-  "userId" : "clc4wj5lh3gyi0ak4eq4n8syr",
-  "title" : "Milwaukee Mission",
-  "author": "Elder Cooper",
-  "imageUrl" : "https://via.placeholder.com/206x260",
-  "year" : 2021,
-  "genre" : "Policier",
-  "ratings" : [{
-    "userId" : "1",
-    "grade": 5
-  },
-    {
-      "userId" : "1",
-      "grade": 5
-    },
-    {
-      "userId" : "clc4wj5lh3gyi0ak4eq4n8syr",
-      "grade": 5
-    },
-    {
-      "userId" : "1",
-      "grade": 5
-    }],
-  "averageRating": 3
-},
-  {
-    "id": "2",
-    "userId" : "clbxs3tag6jkr0biul4trzbrv",
-    "title" : "Book for Esther",
-    "author": "Alabaster",
-    "imageUrl" : "https://via.placeholder.com/206x260",
-    "year" : 2022,
-    "genre" : "Paysage",
-    "ratings" : [{
-      "userId" : "clbxs3tag6jkr0biul4trzbrv",
-      "grade": 4
-    },
-      {
-        "userId" : "1",
-        "grade": 5
-      },
-      {
-        "userId" : "1",
-        "grade": 5
-      },
-      {
-        "userId" : "1",
-        "grade": 5
-      }],
-    "averageRating": 4.2
-  },
-
- ]
- res.status(200).json(books);
-});
-
+app.use('/api/book', bookRoutes);
 
 module.exports = app;
-
