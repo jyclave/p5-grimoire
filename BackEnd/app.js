@@ -2,7 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const bookRoutes = require('./routes/book');
+const cors = require ('cors');
+
+const BookRoutes = require('./routes/book');
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://GrimoireP6:DvTcwx64Q43T1lLU@openclassrooms.muaak.mongodb.net/?retryWrites=true&w=majority&appName=OpenClassRooms";
@@ -38,6 +40,8 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 
-app.use('/api/book', bookRoutes);
+app.use('/api/books', BookRoutes);
+
+ app.use(cors( { origin: "*"} ));
 
 module.exports = app;
