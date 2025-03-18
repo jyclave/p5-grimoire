@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-mudule.exports = (req, res, next) => {
+module.exports = (req, res, next) => {
   try {
     const token =  req.headers.authentification.split('')[1];
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
@@ -14,3 +14,4 @@ mudule.exports = (req, res, next) => {
   }
 
 };
+
