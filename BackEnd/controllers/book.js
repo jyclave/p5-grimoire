@@ -1,4 +1,4 @@
-const Book = require('../models/Book');
+const Book = require('../models/book');
 
 exports.createBook = (req, res, next) => {
   const ratings = req.body.ratings || [];

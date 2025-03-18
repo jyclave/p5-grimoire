@@ -39,11 +39,11 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(cors( { origin: "*"} ));
 app.use(bodyParser.json());
 
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', userRoutes);
 
- app.use(cors( { origin: "*"} ));
 
 module.exports = app;
