@@ -49,6 +49,7 @@ exports.signup = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
+    console.log('Requête reçue pour le login:', req.body);
     const email = req.body.email.toLowerCase(); 
 
     User.findOne({ email })
