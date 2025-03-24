@@ -1,20 +1,59 @@
-const multer = require('multer');
+// const multer = require('multer');
 
-const MIME_TYPES = {
-  'image/jpg': 'jpg',
-  'image/jpeg': 'jpg',
-  'image/png': 'png'
+// const MIME_TYPES = {
+//   'image/jpg': 'jpg',
+//   'image/jpeg': 'jpg',
+//   'image/png': 'png'
+// };
+
+// const storage = multer.diskStorage({
+//   destination: (req, file, callback) => {
+//     callback(null, 'images');
+//   },
+//   filename: (req, file, callback) => {
+//     const name = file.originalname.split(' ').join('_');
+//     const extension = MIME_TYPES[file.mimetype];
+//     callback(null, name + Date.now() + '.' + extension);
+//   }
+// });
+
+// module.exports = multer({storage: storage}).single('image');
+
+const multer = require('multer');
+const sharp = require('sharp');
+const path = require('path');
+const fs = require('fs');
+
+// Configuration du stockage temporaire
+const storage = multer.memoryStorage(); // Stockage temporaire en mémoire
+
+const fileFilter = (req, file, cb) => {
+  if (!file.mimetype.startsWith('image/')) {
+    return cb(new Error('Seules les images sont autorisées !'), false);
+  }
+  cb(null, true);
 };
 
-const storage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, 'images');
-  },
-  filename: (req, file, callback) => {
-    const name = file.originalname.split(' ').join('_');
-    const extension = MIME_TYPES[file.mimetype];
-    callback(null, name + Date.now() + '.' + extension);
-  }
-});
+const upload = multer({ storage, fileFilter }).single('image'); // Nom du champ d'image dans la requête
 
-module.exports = multer({storage: storage}).single('image');
+// Middleware pour traiter et optimiser l'image
+const processImage = async (req, res, next) => {
+  if (!req.file) return next(); // Pas d'image, on passe au prochain middleware
+
+  const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}.webp`; // Nom unique en format WebP
+  const outputPath = path.join('images', fileName);
+
+  try {
+    await sharp(req.file.buffer)
+      .resize({ width: 500 }) // Redimensionner en largeur fixe, hauteur ajustée proportionnellement
+      .webp({ quality: 80 }) // Conversion en WebP avec qualité optimisée
+      .toFile(outputPath);
+
+    req.file.filename = fileName; // Mise à jour du nom du fichier pour le contrôleur
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { upload, processImage };
