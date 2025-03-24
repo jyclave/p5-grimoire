@@ -20,8 +20,6 @@ exports.createBook = (req, res, next) => {
     .catch(error => res.status(400).json({ error }));
 };
 
-
-
 exports.updateBookRating = (req, res, next) => {
   const userId = req.body.userId;
   const rating = req.body.rating;
@@ -52,42 +50,6 @@ exports.updateBookRating = (req, res, next) => {
     })
     .catch(error => res.status(500).json({ error }));
   };
-
-// exports.modifyBook = (req, res, next) => {
-//   console.log('🔄 Mise à jour du livre:', req.params.id);
-
-//   Book.findOne({ _id: req.params.id })
-//     .then(book => {
-//       if (!book) {
-//         return res.status(404).json({ message: 'Livre non trouvé' });
-//       }
-
-//       // Vérifier que l'utilisateur est bien propriétaire du livre
-//       if (book.userId != req.auth.userId) {
-//         return res.status(403).json({ message: 'Action non autorisée' });
-//       }
-
-//       let updatedBook = { ...req.body };
-
-//       // Si une nouvelle image est envoyée
-//       if (req.file) {
-//         // Suppression de l'ancienne image
-//         const oldImagePath = path.join('images', path.basename(book.imageUrl));
-//         fs.unlink(oldImagePath, (err) => {
-//           if (err) console.error('❌ Erreur suppression ancienne image:', err);
-//           else console.log('🗑 Ancienne image supprimée:', oldImagePath);
-//         });
-
-//         // Mise à jour de l'image
-//         updatedBook.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
-//       }
-
-//       Book.updateOne({ _id: req.params.id }, { ...updatedBook, _id: req.params.id })
-//         .then(() => res.status(200).json({ message: 'Livre mis à jour avec succès !' }))
-//         .catch(error => res.status(400).json({ error }));
-//     })
-//     .catch(error => res.status(500).json({ error }));
-// };
 
 exports.modifyBook = (req, res, next) => {
   const bookObject = req.file ? {
@@ -162,7 +124,3 @@ exports.findOneBook = (req, res, next) => {
       .then(books => res.status(200).json(books)) 
       .catch(error => res.status(400).json({ error }));
   };
-  
-  
-
-  
