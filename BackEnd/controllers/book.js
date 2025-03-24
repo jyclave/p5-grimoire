@@ -127,14 +127,11 @@ exports.findOneBook = (req, res, next) => {
       if (!book) {
         return res.status(404).json({ message: "Livre non trouvé" });
       }
-      const response = {
-        ...book.toObject()     
-      };
-      res.status(200).json(response);
+      res.status(200).json(book);
     })
     .catch(error => {
       console.error("❌ Erreur findOneBook :", error);
-      res.status(500).json({ error });
+      res.status(500).json({ message: "Erreur lors de la récupération du livre" });
     });
 };
 
