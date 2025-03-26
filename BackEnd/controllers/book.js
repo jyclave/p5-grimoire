@@ -73,6 +73,39 @@ exports.updateBookRating = (req, res, next) => {
 //       });
 // };
 
+// exports.modifyBook = (req, res, next) => {
+//   const bookObject = req.file
+//     ? {
+//         ...JSON.parse(req.body.book),
+//         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+//       }
+//     : { ...req.body };
+
+//   delete bookObject._userId;
+
+//   Book.findOne({ _id: req.params.id })
+//     .then((book) => {
+//       if (book.userId != req.auth.userId) {
+//         return res.status(401).json({ message: 'Not authorized' });
+//       }
+
+//       // Vérifie s'il y a une nouvelle image et supprime l'ancienne
+//       if (req.file && book.imageUrl) {
+//         const oldFilename = book.imageUrl.split('/images/')[1];
+//         fs.unlink(`images/${oldFilename}`, (err) => {
+//           if (err) console.error('Erreur lors de la suppression de l\'ancienne image :', err);
+//         });
+//       }
+
+//       Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
+//         .then(() => res.status(200).json({ message: 'Objet modifié!' }))
+//         .catch((error) => res.status(400).json({ error }));
+//     })
+//     .catch((error) => {
+//       res.status(400).json({ error });
+//     });
+// };
+
 exports.modifyBook = (req, res, next) => {
   const bookObject = req.file
     ? {
@@ -89,21 +122,27 @@ exports.modifyBook = (req, res, next) => {
         return res.status(401).json({ message: 'Not authorized' });
       }
 
-      // Vérifie s'il y a une nouvelle image et supprime l'ancienne
+      // Vérifie s'il y a une ancienne image avant de supprimer
       if (req.file && book.imageUrl) {
         const oldFilename = book.imageUrl.split('/images/')[1];
-        fs.unlink(`images/${oldFilename}`, (err) => {
-          if (err) console.error('Erreur lors de la suppression de l\'ancienne image :', err);
+        const oldFilePath = path.resolve(__dirname, '../images', oldFilename);
+
+        fs.access(oldFilePath, fs.constants.F_OK, (err) => {
+          if (!err) {
+            fs.unlink(oldFilePath, (err) => {
+              if (err) {
+                console.error("Erreur lors de la suppression de l'ancienne image :", err);
+              }
+            });
+          }
         });
       }
 
-      Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
-        .then(() => res.status(200).json({ message: 'Objet modifié!' }))
-        .catch((error) => res.status(400).json({ error }));
+      // Mise à jour du livre après suppression de l'image
+      return Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id });
     })
-    .catch((error) => {
-      res.status(400).json({ error });
-    });
+    .then(() => res.status(200).json({ message: 'Objet modifié!' }))
+    .catch((error) => res.status(400).json({ error }));
 };
 
 exports.deleteBook = (req, res, next) => {
