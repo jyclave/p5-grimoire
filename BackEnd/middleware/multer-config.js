@@ -20,7 +20,8 @@ const upload = multer({ storage, fileFilter }).single('image'); // Nom du champ 
 const processImage = async (req, res, next) => {
   if (!req.file) return next(); // Pas d'image, on passe au prochain middleware
 
-  const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}.webp`; // Nom unique en format WebP
+  const originalName = path.parse(req.file.originalname).name.replace(/\s+/g, '-'); // Supprime les espaces
+  const fileName = `${originalName}-${Date.now()}.webp`;
   const outputPath = path.join('images', fileName);
 
   try {
