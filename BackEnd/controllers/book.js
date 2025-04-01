@@ -32,7 +32,11 @@ exports.updateBookRating = (req, res, next) => {
   Book.findOne({ _id: req.params.id })
     .then(book => {
       if (!book) {
-        return res.status(404).json({ error: 'Livre non trouvé.' });
+        return res.status(404).json({ 
+          status: 404,
+          error: 'Resource not found',
+          message: 'The requested resource was not found'
+         });
       }
 
       const existingRating = book.ratings.find(r => r.userId.toString() === userId);
@@ -79,7 +83,10 @@ exports.modifyBook = (req, res, next) => {
     .then((book) => {
       if (!book) {
         console.error("❌ Livre non trouvé");
-        return res.status(404).json({ message: "Livre non trouvé" });
+        return res.status(404).json({ 
+          status: 404,
+          error: "Resource not found",
+          message: "The requested resource could not be found" });
       }
 
       if (book.userId != req.auth.userId) {
@@ -160,7 +167,10 @@ exports.findOneBook = (req, res, next) => {
   Book.findOne({ _id: req.params.id })
     .then(book => {
       if (!book) {
-        return res.status(404).json({ message: "Livre non trouvé" });
+        return res.status(404).json({ 
+          status: 404,
+          error: "Resource not found",
+          message: "The requested resource was not found" });
       }
       res.status(200).json(book);
     })
