@@ -2,10 +2,19 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const path = require('path')
+const path = require('path');
+const fs = require('fs');
 
 const bookRoutes = require('./routes/book');
 const userRoutes = require('./routes/user');
+
+const imagesDir = path.join(__dirname, 'images');
+if (!fs.existsSync(imagesDir)) {
+  fs.mkdirSync(imagesDir);
+} else {
+  console.log('Images directory already exists');
+};
+
 
 
 mongoose.connect(process.env.MONGO_URI, {
